@@ -28,7 +28,7 @@
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0; background-color: var(--bg);}
   body{
-    min-height:100vh;
+    min-height:100dvh;
     background-color: var(--bg);
     background-image:
       radial-gradient(ellipse at 20% -10%, rgba(193,154,73,0.10), transparent 55%),
@@ -38,41 +38,57 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    padding: 28px 14px 60px;
+    padding: 16px 14px 20px;
   }
 
   .seal{
-    width:56px;height:56px;border-radius:50%;
+    width:42px;height:42px;border-radius:50%;
     border:2px solid var(--gold);
     display:flex;align-items:center;justify-content:center;
     font-family:'Cinzel',serif;
     font-weight:700;
-    font-size:20px;
+    font-size:15px;
     color:var(--gold-bright);
     background: radial-gradient(circle at 35% 30%, rgba(193,154,73,0.18), transparent 70%);
-    margin-bottom:10px;
+    margin-bottom:5px;
     letter-spacing:0.5px;
   }
 
   header{
     text-align:center;
-    margin-bottom:18px;
+    margin-bottom:10px;
+    position:relative;
+    width:100%;
+    max-width:420px;
   }
   h1{
     font-family:'Cinzel',serif;
     font-weight:700;
-    font-size:clamp(26px,6vw,38px);
+    font-size:clamp(22px,6vw,32px);
     letter-spacing:2px;
     margin:0;
     color:var(--parchment);
     text-shadow: 0 0 24px rgba(193,154,73,0.25);
   }
   header p.tag{
-    margin:6px 0 0;
+    margin:2px 0 0;
     font-size:13px;
     letter-spacing:2.5px;
     text-transform:uppercase;
     color:var(--gold);
+  }
+  .help-button{
+    position:absolute;
+    right:0;
+    top:2px;
+    width:32px;
+    height:32px;
+    border:1px solid var(--panel-line);
+    border-radius:50%;
+    background:var(--panel);
+    color:var(--gold-bright);
+    font:700 17px 'Source Sans 3',sans-serif;
+    cursor:pointer;
   }
 
   .control-card{
@@ -81,8 +97,8 @@
     background: linear-gradient(180deg, var(--panel), var(--bg-2));
     border:1px solid var(--panel-line);
     border-radius:10px;
-    padding:16px 18px;
-    margin-bottom:22px;
+    padding:10px 12px;
+    margin-bottom:14px;
   }
   .control-row{
     display:flex;
@@ -103,8 +119,8 @@
     color:var(--parchment);
     border:1px solid var(--panel-line);
     border-radius:6px;
-    padding:9px 10px;
-    font-size:15px;
+    padding:7px 9px;
+    font-size:14px;
     font-family:'Source Sans 3',sans-serif;
     appearance:none;
     cursor:pointer;
@@ -120,7 +136,7 @@
     color: var(--parchment);
     font-weight:400;
   }
-  select#chapterSelect:focus-visible, .icon-link:focus-visible, .key:focus-visible, .play-again:focus-visible{
+  select#chapterSelect:focus-visible, .icon-link:focus-visible, .key:focus-visible, .play-again:focus-visible, .help-button:focus-visible, .modal-close:focus-visible, .modal-action:focus-visible{
     outline:2px solid var(--gold-bright);
     outline-offset:2px;
   }
@@ -129,8 +145,8 @@
     display:inline-flex;
     align-items:center;
     gap:6px;
-    margin-top:12px;
-    font-size:13.5px;
+    margin-top:8px;
+    font-size:13px;
     color:var(--gold-bright);
     text-decoration:none;
     border-bottom:1px solid rgba(218,181,103,0.35);
@@ -139,8 +155,8 @@
   }
   .scripture-link:hover{ color:var(--parchment); border-bottom-color:var(--parchment); }
   .round-status{
-    margin:12px 0 0;
-    font-size:13px;
+    margin:5px 0 0;
+    font-size:12px;
     color:var(--parchment-dim);
   }
   .play-again{
@@ -160,10 +176,10 @@
   #board{
     display:grid;
     grid-template-rows:repeat(6,1fr);
-    gap:7px;
-    margin-bottom:22px;
+    gap:5px;
+    margin-bottom:14px;
   }
-  .row{display:grid;grid-template-columns:repeat(5,minmax(46px,58px));gap:7px;}
+  .row{display:grid;grid-template-columns:repeat(5,minmax(44px,54px));gap:5px;}
   .tile{
     position:relative;
     aspect-ratio:1/1;
@@ -228,31 +244,14 @@
     100%{transform:rotateX(0deg);}
   }
 
-  #message{
-    min-height:22px;
-    font-size:14px;
-    letter-spacing:0.5px;
-    color:var(--parchment);
-    background: var(--panel);
-    border:1px solid var(--panel-line);
-    padding: 5px 14px;
-    border-radius:20px;
-    margin-bottom:18px;
-    opacity:0;
-    transition:opacity .2s ease;
-  }
-  #message.show{opacity:1;}
-  #message.win{color:var(--gold-bright);}
-  #message.lose{color:var(--danger);}
-
   #keyboard{
     display:flex;
     flex-direction:column;
-    gap:7px;
+    gap:5px;
     width:100%;
     max-width:520px;
   }
-  .krow{display:flex;justify-content:center;gap:5px;}
+  .krow{display:flex;justify-content:center;gap:4px;}
   .key{
     font-family:'Source Sans 3',sans-serif;
     font-weight:600;
@@ -260,7 +259,7 @@
     color:var(--parchment);
     border:1px solid var(--panel-line);
     border-radius:6px;
-    padding: 12px 0;
+    padding: 10px 0;
     flex:1;
     max-width:40px;
     min-width:26px;
@@ -277,7 +276,7 @@
   .key.absent{background: var(--absent); color: var(--absent-text); border-color: var(--absent);}
 
   footer{
-    margin-top:34px;
+    display:none;
     font-size:12px;
     color:var(--parchment-dim);
     text-align:center;
@@ -289,9 +288,111 @@
     margin:0 auto 12px;
   }
 
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    z-index:10;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:rgba(17,14,10,.72);
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{
+    width:min(100%, 420px);
+    max-height:min(84dvh, 620px);
+    overflow:auto;
+    position:relative;
+    padding:24px 22px 20px;
+    border:1px solid var(--panel-line);
+    border-radius:12px;
+    background:linear-gradient(180deg, #342b1d, var(--panel));
+    box-shadow:0 18px 48px rgba(0,0,0,.45);
+    text-align:center;
+  }
+  .modal h2{
+    margin:0 28px 12px;
+    font:700 21px 'Cinzel',serif;
+    color:var(--gold-bright);
+  }
+  .modal-close{
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:30px;
+    height:30px;
+    border:1px solid var(--panel-line);
+    border-radius:50%;
+    background:transparent;
+    color:var(--parchment);
+    font-size:21px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .modal-copy{
+    margin:0;
+    color:var(--parchment);
+    font-size:16px;
+    line-height:1.45;
+    white-space:pre-line;
+  }
+  .modal .verse{
+    margin:14px 0 0;
+    padding:12px;
+    border-left:3px solid var(--gold);
+    border-radius:4px;
+    background:rgba(28,23,16,.5);
+    color:var(--parchment-dim);
+    font-size:14px;
+    font-style:italic;
+    line-height:1.45;
+  }
+  .modal-action{
+    width:100%;
+    margin-top:18px;
+    padding:10px 14px;
+    border:1px solid var(--gold);
+    border-radius:6px;
+    background:var(--gold-bright);
+    color:var(--ink);
+    font:700 14px 'Source Sans 3',sans-serif;
+    cursor:pointer;
+  }
+  .how-to-list{
+    margin:0;
+    padding-left:20px;
+    text-align:left;
+    color:var(--parchment);
+    line-height:1.55;
+  }
+  .how-to-list li + li{margin-top:8px;}
+  .example-row{display:flex;justify-content:center;gap:5px;margin:16px 0 8px;}
+  .example-tile{
+    width:43px;
+    aspect-ratio:1;
+    display:grid;
+    place-items:center;
+    border:2px solid var(--panel-line);
+    border-radius:5px;
+    font:700 20px 'Cinzel',serif;
+  }
+  .example-tile.correct{background:var(--correct);border-color:var(--correct-bright);color:var(--ink);}
+  .example-tile.present{background:var(--clay);border-color:var(--clay-bright);color:var(--ink);}
+  .example-tile.absent{background:var(--absent);border-color:var(--absent);color:var(--absent-text);}
+
   @media (prefers-reduced-motion: reduce){
     .tile.reveal{animation:none;}
     .tile.pop{transform:none;}
+  }
+  @media (max-height: 700px){
+    body{padding-top:8px;}
+    .seal{display:none;}
+    header p.tag{display:none;}
+    header{margin-bottom:6px;}
+    .control-card{margin-bottom:8px;}
+    #board{margin-bottom:8px;}
+    .key{padding:8px 0;}
   }
 </style>
 </head>
@@ -301,6 +402,7 @@
 <header>
   <h1>Come Follow Medle</h1>
   <p class="tag">A scripture word puzzle</p>
+  <button class="help-button" id="helpButton" type="button" aria-label="How to play">?</button>
 </header>
 
 <div class="control-card">
@@ -314,10 +416,7 @@
     Read this chapter on ChurchofJesusChrist.org &rarr;
   </a>
   <div class="round-status" id="roundStatus" aria-live="polite"></div>
-  <button class="play-again" id="playAgain" type="button" hidden></button>
 </div>
-
-<div id="message"></div>
 
 <div id="board"></div>
 
@@ -327,6 +426,15 @@
   <div class="divider"></div>
   Words are chosen to connect to the themes of each chapter. Guesses are checked against the actual words of that chapter — if a word isn't there, it won't cost you a try. Pick a week and chapter above to switch readings.
 </footer>
+
+<div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" type="button" aria-label="Close">×</button>
+    <h2 id="modalTitle"></h2>
+    <div id="modalBody"></div>
+    <button class="modal-action" id="modalAction" type="button" hidden></button>
+  </section>
+</div>
 
 <script>
   // ---- Scripture data (KJV, LDS edition) ----
@@ -540,12 +648,16 @@
 
   const boardEl = document.getElementById("board");
   const keyboardEl = document.getElementById("keyboard");
-  const messageEl = document.getElementById("message");
   const chapterSelect = document.getElementById("chapterSelect");
   const scriptureLink = document.getElementById("scriptureLink");
   const weekLabelEl = document.getElementById("weekLabel");
   const roundStatusEl = document.getElementById("roundStatus");
-  const playAgainBtn = document.getElementById("playAgain");
+  const helpButton = document.getElementById("helpButton");
+  const modalBackdrop = document.getElementById("modalBackdrop");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  const modalClose = document.getElementById("modalClose");
+  const modalAction = document.getElementById("modalAction");
 
   function populateChapterSelect(){
     chapterSelect.innerHTML = "";
@@ -581,13 +693,8 @@
       roundStatusEl.textContent = completed < total
         ? `Round ${completed} of ${total} complete · ${total - completed} new word puzzle${total - completed === 1 ? "" : "s"} remaining`
         : `All ${total} meaningful word puzzles in this chapter are complete.`;
-      playAgainBtn.hidden = completed >= total;
-      if (!playAgainBtn.hidden) {
-        playAgainBtn.textContent = `Play Again · ${total - completed} New Word${total - completed === 1 ? "" : "s"} Left`;
-      }
     } else {
       roundStatusEl.textContent = `Round ${completed + 1} of ${total} · ${Math.max(remainingAfterRound, 0)} new word puzzle${remainingAfterRound === 1 ? "" : "s"} after this round`;
-      playAgainBtn.hidden = true;
     }
   }
 
@@ -606,7 +713,7 @@
     currentGuess = "";
     gameOver = chapterComplete;
     keyStatus = {};
-    showMessage(chapterComplete ? "Every meaningful word puzzle in this chapter has been played. Choose another chapter to continue." : "");
+    if (chapterComplete) showMessage("Chapter complete", "Every meaningful word puzzle in this chapter has been played. Choose another chapter to continue.");
     renderBoard();
     renderKeyboard();
     updateRoundStatus();
@@ -620,19 +727,71 @@
     currentGuess = "";
     gameOver = false;
     keyStatus = {};
-    showMessage("");
+    closeModal();
     renderBoard();
     renderKeyboard();
     updateRoundStatus();
   }
 
-  function showMessage(text, cls){
-    messageEl.textContent = text;
-    messageEl.className = "";
-    if (text) {
-      messageEl.classList.add("show");
-      if (cls) messageEl.classList.add(cls);
+  function openModal(title, content, actionText = ""){
+    modalTitle.textContent = title;
+    modalBody.innerHTML = "";
+    if (typeof content === "string") {
+      const copy = document.createElement("p");
+      copy.className = "modal-copy";
+      copy.textContent = content;
+      modalBody.appendChild(copy);
+    } else {
+      modalBody.appendChild(content);
     }
+    modalAction.hidden = !actionText;
+    modalAction.textContent = actionText;
+    modalBackdrop.classList.add("open");
+    modalBackdrop.setAttribute("aria-hidden", "false");
+    requestAnimationFrame(() => modalClose.focus());
+  }
+
+  function closeModal(){
+    modalBackdrop.classList.remove("open");
+    modalBackdrop.setAttribute("aria-hidden", "true");
+  }
+
+  function showMessage(title, text){
+    openModal(title, text);
+  }
+
+  function showResultModal(answer, won){
+    const completed = completedWords().length;
+    const remaining = current.words.length - completed;
+    const content = document.createDocumentFragment();
+    const copy = document.createElement("p");
+    copy.className = "modal-copy";
+    copy.textContent = `${answer.word} — ${answer.hint}\n${answer.verseRef}`;
+    content.appendChild(copy);
+    const verse = document.createElement("p");
+    verse.className = "verse";
+    verse.textContent = `“${answer.verse}”`;
+    content.appendChild(verse);
+    const title = won ? "Solved!" : "Round complete";
+    const actionText = remaining ? `Play Again · ${remaining} New Word${remaining === 1 ? "" : "s"} Left` : "";
+    openModal(title, content, actionText);
+  }
+
+  function showHowToPlay(){
+    const content = document.createElement("div");
+    const copy = document.createElement("p");
+    copy.className = "modal-copy";
+    copy.textContent = "Find the five-letter word connected to the selected scripture chapter.";
+    content.appendChild(copy);
+    const list = document.createElement("ul");
+    list.className = "how-to-list";
+    list.innerHTML = "<li>Guesses must appear in the chapter, so invalid words do not cost a turn.</li><li>Green letters are in the correct spot. Gold letters are in the word but in a different spot. Dark letters are not in the word.</li><li>Complete a round to reveal its verse and play a new word from the same chapter.</li>";
+    content.appendChild(list);
+    const example = document.createElement("div");
+    example.className = "example-row";
+    example.innerHTML = '<span class="example-tile correct">T</span><span class="example-tile present">R</span><span class="example-tile absent">Y</span>';
+    content.appendChild(example);
+    openModal("How to play", content);
   }
 
   function evaluateGuess(guess, answer){
@@ -730,12 +889,12 @@
 
   function submitGuess(){
     if (currentGuess.length < WORD_LEN){
-      showMessage("Not enough letters");
+      showMessage("Not enough letters", "Enter all five letters before submitting your guess.");
       shakeCurrentRow();
       return;
     }
     if (!current.bank.includes(currentGuess)){
-      showMessage(`Not found in ${current.book} ${current.ch} — try again`);
+      showMessage("Try another word", `${currentGuess} does not appear in ${current.book} ${current.ch}, so it will not cost a try.`);
       shakeCurrentRow();
       return;
     }
@@ -752,13 +911,11 @@
     if (won){
       gameOver = true;
       completedWordsByChapter[currentChapterIndex] = [...completedWords(), currentWordIndex];
-      showMessage(`Solved! ${answer.word} — ${answer.hint}. ${answer.verseRef}: "${answer.verse}"`, "win");
+      showResultModal(answer, true);
     } else if (guesses.length >= MAX_GUESSES){
       gameOver = true;
       completedWordsByChapter[currentChapterIndex] = [...completedWords(), currentWordIndex];
-      showMessage(`The word was ${answer.word} — ${answer.hint}. ${answer.verseRef}: "${answer.verse}"`, "lose");
-    } else {
-      showMessage("");
+      showResultModal(answer, false);
     }
     updateRoundStatus();
   }
@@ -772,17 +929,32 @@
   }
 
   document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeModal();
+      return;
+    }
+    if (modalBackdrop.classList.contains("open")) return;
     const k = e.key.toUpperCase();
-    if (k === "ENTER") handleKey("ENTER");
-    else if (k === "BACKSPACE") handleKey("DEL");
-    else if (/^[A-Z]$/.test(k)) handleKey(k);
+    if (k === "ENTER") {
+      e.preventDefault();
+      handleKey("ENTER");
+    } else if (k === "BACKSPACE") {
+      e.preventDefault();
+      handleKey("DEL");
+    } else if (/^[A-Z]$/.test(k)) handleKey(k);
   });
 
   chapterSelect.addEventListener("change", (e) => {
     loadChapter(parseInt(e.target.value, 10));
   });
 
-  playAgainBtn.addEventListener("click", playAgain);
+  helpButton.addEventListener("click", showHowToPlay);
+  modalClose.addEventListener("click", closeModal);
+  modalBackdrop.addEventListener("click", (e) => {
+    if (e.target === modalBackdrop) closeModal();
+  });
+  modalAction.addEventListener("click", playAgain);
 
   populateChapterSelect();
   // Default to the current week's first chapter
