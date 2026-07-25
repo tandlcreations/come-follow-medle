@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Come Follow Medle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1e1a14;
+    --bg-2: #251f17;
+    --panel: #2b2418;
+    --panel-line: #7a6a4a;
+    --parchment: #eadfc4;
+    --parchment-dim: #b8ab88;
+    --gold: #c19a49;
+    --gold-bright: #dab567;
+    --clay: #c17d3a;
+    --clay-bright: #d69454;
+    --correct: #6f9c48;
+    --correct-bright: #96c168;
+    --absent: #362f24;
+    --absent-text: #a89f8e;
+    --ink: #1c1710;
+    --danger: #e0836a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0; background-color: var(--bg);}
+  body{
+    min-height:100vh;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% -10%, rgba(193,154,73,0.10), transparent 55%),
+      radial-gradient(ellipse at 90% 110%, rgba(138,106,70,0.12), transparent 55%);
+    color: var(--parchment);
+    font-family: 'Source Sans 3', sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 28px 14px 60px;
+  }
+
+  .seal{
+    width:56px;height:56px;border-radius:50%;
+    border:2px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Cinzel',serif;
+    font-weight:700;
+    font-size:20px;
+    color:var(--gold-bright);
+    background: radial-gradient(circle at 35% 30%, rgba(193,154,73,0.18), transparent 70%);
+    margin-bottom:10px;
+    letter-spacing:0.5px;
+  }
+
+  header{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  h1{
+    font-family:'Cinzel',serif;
+    font-weight:700;
+    font-size:clamp(26px,6vw,38px);
+    letter-spacing:2px;
+    margin:0;
+    color:var(--parchment);
+    text-shadow: 0 0 24px rgba(193,154,73,0.25);
+  }
+  header p.tag{
+    margin:6px 0 0;
+    font-size:13px;
+    letter-spacing:2.5px;
+    text-transform:uppercase;
+    color:var(--gold);
+  }
+
+  .control-card{
+    width:100%;
+    max-width:420px;
+    background: linear-gradient(180deg, var(--panel), var(--bg-2));
+    border:1px solid var(--panel-line);
+    border-radius:10px;
+    padding:16px 18px;
+    margin-bottom:22px;
+  }
+  .control-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .control-label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:var(--parchment-dim);
+    margin-bottom:6px;
+  }
+  select#chapterSelect{
+    width:100%;
+    background:var(--ink);
+    color:var(--parchment);
+    border:1px solid var(--panel-line);
+    border-radius:6px;
+    padding:9px 10px;
+    font-size:15px;
+    font-family:'Source Sans 3',sans-serif;
+    appearance:none;
+    cursor:pointer;
+  }
+  select#chapterSelect optgroup{
+    background: var(--ink);
+    color: var(--gold-bright);
+    font-weight:600;
+    font-style:normal;
+  }
+  select#chapterSelect option{
+    background: var(--ink);
+    color: var(--parchment);
+    font-weight:400;
+  }
+  select#chapterSelect:focus-visible, .icon-link:focus-visible, .key:focus-visible, .play-again:focus-visible{
+    outline:2px solid var(--gold-bright);
+    outline-offset:2px;
+  }
+  .chapter-block{flex:1;}
+  .scripture-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:12px;
+    font-size:13.5px;
+    color:var(--gold-bright);
+    text-decoration:none;
+    border-bottom:1px solid rgba(218,181,103,0.35);
+    padding-bottom:1px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .scripture-link:hover{ color:var(--parchment); border-bottom-color:var(--parchment); }
+  .round-status{
+    margin:12px 0 0;
+    font-size:13px;
+    color:var(--parchment-dim);
+  }
+  .play-again{
+    width:100%;
+    margin-top:12px;
+    padding:10px 14px;
+    font:600 14px 'Source Sans 3',sans-serif;
+    letter-spacing:.4px;
+    color:var(--ink);
+    background:var(--gold-bright);
+    border:1px solid var(--gold);
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .play-again:hover{background:var(--parchment);}
+
+  #board{
+    display:grid;
+    grid-template-rows:repeat(6,1fr);
+    gap:7px;
+    margin-bottom:22px;
+  }
+  .row{display:grid;grid-template-columns:repeat(5,minmax(46px,58px));gap:7px;}
+  .tile{
+    position:relative;
+    aspect-ratio:1/1;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Cinzel',serif;
+    font-weight:600;
+    font-size:clamp(20px,4.5vw,26px);
+    color:var(--parchment);
+    background:var(--bg-2);
+    border:2px solid var(--panel-line);
+    border-radius:6px;
+    text-transform:uppercase;
+    transition: transform .12s ease;
+  }
+  .tile.filled{border-color:var(--clay-bright);}
+  .tile.pop{transform:scale(1.06);}
+  .tile.correct{
+    background: var(--correct);
+    border-color: var(--correct-bright);
+    color: var(--ink);
+  }
+  .tile.present{
+    background: var(--clay);
+    border-color: var(--clay-bright);
+    color: var(--ink);
+  }
+  .tile.absent{
+    background: var(--absent);
+    border-color: var(--absent);
+    color: var(--absent-text);
+  }
+  .tile.correct::after, .tile.present::after{
+    content:"";
+    position:absolute;
+    top:3px;left:3px;right:3px;bottom:3px;
+    border:1px solid rgba(28,23,16,0.25);
+    border-radius:4px;
+    pointer-events:none;
+  }
+  .tile.correct::before{
+    content:"✓";
+    position:absolute;
+    top:1px; right:4px;
+    font-size:10px;
+    font-family:'Source Sans 3',sans-serif;
+    color: var(--ink);
+    opacity:0.65;
+  }
+  .tile.present::before{
+    content:"~";
+    position:absolute;
+    top:-1px; right:4px;
+    font-size:13px;
+    font-family:'Source Sans 3',sans-serif;
+    color: var(--ink);
+    opacity:0.65;
+  }
+  .tile.reveal{animation: flip .45s ease forwards;}
+  @keyframes flip{
+    0%{transform:rotateX(0deg);}
+    50%{transform:rotateX(90deg);}
+    100%{transform:rotateX(0deg);}
+  }
+
+  #message{
+    min-height:22px;
+    font-size:14px;
+    letter-spacing:0.5px;
+    color:var(--parchment);
+    background: var(--panel);
+    border:1px solid var(--panel-line);
+    padding: 5px 14px;
+    border-radius:20px;
+    margin-bottom:18px;
+    opacity:0;
+    transition:opacity .2s ease;
+  }
+  #message.show{opacity:1;}
+  #message.win{color:var(--gold-bright);}
+  #message.lose{color:var(--danger);}
+
+  #keyboard{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    width:100%;
+    max-width:520px;
+  }
+  .krow{display:flex;justify-content:center;gap:5px;}
+  .key{
+    font-family:'Source Sans 3',sans-serif;
+    font-weight:600;
+    background:var(--panel);
+    color:var(--parchment);
+    border:1px solid var(--panel-line);
+    border-radius:6px;
+    padding: 12px 0;
+    flex:1;
+    max-width:40px;
+    min-width:26px;
+    font-size:13px;
+    text-transform:uppercase;
+    cursor:pointer;
+    user-select:none;
+    transition: background .15s ease, transform .08s ease;
+  }
+  .key:active{transform:scale(0.94);}
+  .key.wide{max-width:64px;font-size:11px;}
+  .key.correct{background: var(--correct); color: var(--ink); border-color: var(--correct-bright);}
+  .key.present{background: var(--clay); color: var(--ink); border-color: var(--clay-bright);}
+  .key.absent{background: var(--absent); color: var(--absent-text); border-color: var(--absent);}
+
+  footer{
+    margin-top:34px;
+    font-size:12px;
+    color:var(--parchment-dim);
+    text-align:center;
+    max-width:420px;
+    line-height:1.6;
+  }
+  footer .divider{
+    width:40px;height:1px;background:var(--panel-line);
+    margin:0 auto 12px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .tile.reveal{animation:none;}
+    .tile.pop{transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="seal">CFM</div>
+<header>
+  <h1>Come Follow Medle</h1>
+  <p class="tag">A scripture word puzzle</p>
+</header>
+
+<div class="control-card">
+  <div class="control-row">
+    <div class="chapter-block">
+      <div class="control-label" id="weekLabel">This week</div>
+      <select id="chapterSelect" aria-label="Choose a chapter"></select>
+    </div>
+  </div>
+  <a class="scripture-link" id="scriptureLink" href="#" target="_blank" rel="noopener">
+    Read this chapter on ChurchofJesusChrist.org &rarr;
+  </a>
+  <div class="round-status" id="roundStatus" aria-live="polite"></div>
+  <button class="play-again" id="playAgain" type="button" hidden></button>
+</div>
+
+<div id="message"></div>
+
+<div id="board"></div>
+
+<div id="keyboard"></div>
+
+<footer>
+  <div class="divider"></div>
+  Words are chosen to connect to the themes of each chapter. Guesses are checked against the actual words of that chapter — if a word isn't there, it won't cost you a try. Pick a week and chapter above to switch readings.
+</footer>
+
+<script>
+  // ---- Scripture data (KJV, LDS edition) ----
+  // Each "bank" is every five-letter word that programmatically matched (regex,
+  // not manual reading) in that chapter's actual verse text from
+  // churchofjesuschrist.org, so guesses are checked against real, verified words.
+  // "verse" is the actual KJV verse the word is drawn from, shown on solve.
+  // Each chapter has two to five meaningful, verse-linked words for replay.
+  const WEEKS = [
+    {
+      label: "July 13\u201319 \u00b7 2 Kings 16\u201325",
+      book: "2 Kings",
+      chapters: [
+        { ch: 16, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/16?lang=eng",
+          bank: ["ALTAR","BASES","BEGAN","BLOOD","BUILT","BURNT","COULD","DAVID","DRAVE","DRINK","DWELT","ELATH","ENTRY","EVERY","FOUND","GREAT","GREEN","HILLS","HOUSE","JUDAH","KINGS","LAVER","NORTH","PEACE","PEKAH","REIGN","REZIN","RIGHT","SHALL","SIGHT","SLEPT","STEAD","SYRIA","THEIR","THERE","UNDER","WHICH","YEARS"],
+          words: [
+            { word: "ALTAR", hint: "Ahaz copies a pagan altar from Damascus", verseRef: "2 Kings 16:12", verse: "And when the king was come from Damascus, the king saw the altar: and the king approached to the altar, and offered thereon." },
+            { word: "BURNT", hint: "Ahaz commands burnt offerings on the new altar", verseRef: "2 Kings 16:13", verse: "And he burnt his burnt offering and his meat offering, and poured his drink offering, and sprinkled the blood of his peace offerings, upon the altar." },
+            { word: "BLOOD", hint: "The blood of sacrifice sprinkled upon the altar", verseRef: "2 Kings 16:15", verse: "Sprinkle upon it all the blood of the burnt offering, and all the blood of the sacrifice: and the brasen altar shall be for me to inquire by." },
+            { word: "DRAVE", hint: "Syria drave the Jews from Elath", verseRef: "2 Kings 16:6", verse: "At that time Rezin king of Syria recovered Elath to Syria, and drave the Jews from Elath." },
+            { word: "FOUND", hint: "Ahaz sends silver and gold found in the Lord's house", verseRef: "2 Kings 16:8", verse: "And Ahaz took the silver and gold that was found in the house of the Lord, and in the treasures of the king's house, and sent it for a present to the king of Assyria." },
+          ] },
+        { ch: 17, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/17?lang=eng",
+          bank: ["ABOUT","AFTER","AMONG","ANGER","ANGRY","BEGAN","BOUND","BUILT","BURNT","CARRY","DAVID","DRAVE","DWELL","DWELT","EGYPT","EVERY","FOUND","GOZAN","GREAT","GREEN","GROVE","HABOR","HALAH","HOUSE","IDOLS","JACOB","JUDAH","KINGS","LIONS","MEDES","NAMED","NEBAT","NECKS","NINTH","OTHER","POWER","REIGN","RIGHT","RIVER","ROUND","SEERS","SERVE","SHALL","SIGHT","SPAKE","TEACH","THEIR","THERE","THESE","THING","THOSE","THREE","TOWER","TRIBE","UNDER","UNTIL","WHICH","WOULD","WROTE","YEARS"],
+          words: [
+            { word: "ANGRY", hint: "The Lord grows angry and Israel is carried to Assyria", verseRef: "2 Kings 17:18", verse: "Therefore the Lord was very angry with Israel, and removed them out of his sight: there was none left but the tribe of Judah only." },
+            { word: "IDOLS", hint: "Israel served idols against the Lord's word", verseRef: "2 Kings 17:12", verse: "For they served idols, whereof the Lord had said unto them, Ye shall not do this thing." },
+            { word: "GROVE", hint: "Israel makes molten images and a grove", verseRef: "2 Kings 17:16", verse: "And they left all the commandments of the Lord their God, and made them molten images, even two calves, and made a grove, and worshipped all the host of heaven, and served Baal." },
+            { word: "LIONS", hint: "The Lord sends lions among the new settlers", verseRef: "2 Kings 17:25", verse: "Therefore the Lord sent lions among them, which slew some of them." },
+            { word: "TEACH", hint: "A priest is sent to teach the manner of the God of the land", verseRef: "2 Kings 17:27", verse: "Let them go and dwell there, and let him teach them the manner of the God of the land." },
+          ] },
+        { ch: 18, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/18?lang=eng",
+          bank: ["AFTER","ALTAR","AMONG","ARPAD","ASAPH","BEGAN","BRAKE","BREAD","CARRY","CLAVE","CRIED","DAVID","DOORS","DRINK","EGYPT","EVERY","FIELD","FORTH","FOUND","GOZAN","GREAT","HABOR","HALAH","HONEY","HOUSE","JUDAH","KINGS","LEAST","MEDES","MOSES","NINTH","OLIVE","PEACE","PLACE","REIGN","RIGHT","RIVER","SAITH","SHALL","SIGHT","SIXTH","SMOTE","SPAKE","SPEAK","STAFF","STOOD","TAKEN","THEIR","THERE","THESE","THIRD","THOSE","THREE","TOWER","TRUST","UNTIL","UPPER","VOICE","WHERE","WHICH","WHOSE","WORDS","WOULD","YEARS"],
+          words: [
+            { word: "TRUST", hint: "Hezekiah trusts in the Lord against Assyria", verseRef: "2 Kings 18:5", verse: "He trusted in the Lord God of Israel; so that after him was none like him among all the kings of Judah, nor any that were before him." },
+            { word: "CLAVE", hint: "Hezekiah clave to the Lord and kept his commandments", verseRef: "2 Kings 18:6", verse: "For he clave to the Lord, and departed not from following him, but kept his commandments, which the Lord commanded Moses." },
+            { word: "BRAKE", hint: "Hezekiah brakes down the idols and images", verseRef: "2 Kings 18:4", verse: "He removed the high places, and brake the images, and cut down the groves, and brake in pieces the brasen serpent that Moses had made." },
+            { word: "SMOTE", hint: "Hezekiah smote the Philistines", verseRef: "2 Kings 18:8", verse: "He smote the Philistines, even unto Gaza, and the borders thereof, from the tower of the watchmen to the fenced city." },
+            { word: "STAFF", hint: "Egypt is called a bruised staff, not to be trusted", verseRef: "2 Kings 18:21", verse: "Now, behold, thou trustest upon the staff of this bruised reed, even upon Egypt." },
+          ] },
+        { ch: 19, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/19?lang=eng",
+          bank: ["ABODE","AGAIN","ALONE","ANGEL","AROSE","ARPAD","ARROW","BIRTH","BLAST","BRING","CAUSE","CEDAR","DRIED","DRUNK","DWELT","EARLY","EARTH","ENTER","FIELD","FIGHT","FORTH","FOUND","FRUIT","GOING","GOZAN","GRASS","GREEN","GROWN","HANDS","HARAN","HEAPS","HEARD","HOSTS","HOUSE","JUDAH","KINGS","LANDS","MOUNT","NIGHT","PLANT","POWER","SAITH","SCORN","SHALL","SHALT","SHOOT","SIDES","SMALL","SMOTE","SPEAK","STEAD","STONE","SWORD","THEIR","THERE","THINE","THIRD","TIMES","TREES","TRUTH","VOICE","WASTE","WHERE","WHICH","WORDS"],
+          words: [
+            { word: "ANGEL", hint: "The Lord's angel defends Jerusalem", verseRef: "2 Kings 19:35", verse: "And it came to pass that night, that the angel of the Lord went out, and smote in the camp of the Assyrians an hundred fourscore and five thousand." },
+            { word: "SMOTE", hint: "Sennacherib's own sons smote him with the sword", verseRef: "2 Kings 19:37", verse: "Adrammelech and Sharezer his sons smote him with the sword: and they escaped into the land of Armenia." },
+            { word: "SWORD", hint: "The Lord will cause the king of Assyria to fall by the sword", verseRef: "2 Kings 19:7", verse: "I will send a blast upon him, and he shall hear a rumour, and shall return to his own land; and I will cause him to fall by the sword in his own land." },
+            { word: "SCORN", hint: "Jerusalem laughs Sennacherib to scorn", verseRef: "2 Kings 19:21", verse: "The virgin the daughter of Zion hath despised thee, and laughed thee to scorn." },
+            { word: "ARROW", hint: "Assyria will not shoot an arrow into the city", verseRef: "2 Kings 19:32", verse: "He shall not come into this city, nor shoot an arrow there, nor come before it with shield, nor cast a bank against it." },
+          ] },
+        { ch: 20, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/20?lang=eng",
+          bank: ["AFORE","AGAIN","AMONG","BEGET","COURT","CRIED","DAVID","DEATH","FOUND","HEARD","HEART","HOUSE","ISSUE","JUDAH","KINGS","LIGHT","MIGHT","ORDER","PEACE","SAITH","SHALL","SHALT","SIGHT","SLEPT","STEAD","STORE","TEARS","THERE","THESE","THINE","THING","THIRD","THOSE","TRUTH","WATER","WHICH","YEARS"],
+          words: [
+            { word: "TEARS", hint: "Hezekiah's tears and prayer bring healing", verseRef: "2 Kings 20:5", verse: "I have heard thy prayer, I have seen thy tears: behold, I will heal thee: on the third day thou shalt go up unto the house of the Lord." },
+            { word: "HEART", hint: "Hezekiah walked before the Lord with a perfect heart", verseRef: "2 Kings 20:3", verse: "I beseech thee, O Lord, remember now how I have walked before thee in truth and with a perfect heart, and have done that which is good in thy sight." },
+            { word: "TRUTH", hint: "Hezekiah is glad for peace and truth in his days", verseRef: "2 Kings 20:19", verse: "Good is the word of the Lord which thou hast spoken. And he said, Is it not good, if peace and truth be in my days?" },
+            { word: "CRIED", hint: "Isaiah cried unto the Lord for a sign", verseRef: "2 Kings 20:11", verse: "And Isaiah the prophet cried unto the Lord: and he brought the shadow ten degrees backward, by which it had gone down in the dial of Ahaz." },
+            { word: "DEATH", hint: "Hezekiah was sick unto death", verseRef: "2 Kings 20:1", verse: "In those days was Hezekiah sick unto death. And the prophet Isaiah the son of Amoz came to him, and said unto him, Thus saith the Lord, Set thine house in order; for thou shalt die, and not live." },
+          ] },
+        { ch: 21, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/21?lang=eng",
+          bank: ["ABOVE","AFTER","AGAIN","ANGER","BEGAN","BLOOD","BUILT","DAVID","DEALT","DOING","EGYPT","FIFTY","FORTH","GROVE","HARUZ","HOUSE","IDOLS","IMAGE","JUDAH","KINGS","MOSES","REIGN","SAITH","SHALL","SIGHT","SINCE","SLEPT","SPAKE","SPOIL","STEAD","THEIR","THESE","TIMES","WHICH","YEARS"],
+          words: [
+            { word: "BLOOD", hint: "Manasseh sheds innocent blood", verseRef: "2 Kings 21:16", verse: "Moreover Manasseh shed innocent blood very much, till he had filled Jerusalem from one end to another." },
+            { word: "IDOLS", hint: "Manasseh makes Judah sin with his idols", verseRef: "2 Kings 21:11", verse: "Because Manasseh king of Judah hath done these abominations... and hath made Judah also to sin with his idols." },
+            { word: "GROVE", hint: "Manasseh reared up altars for Baal and made a grove", verseRef: "2 Kings 21:3", verse: "He reared up altars for Baal, and made a grove, as did Ahab king of Israel; and worshipped all the host of heaven, and served them." },
+            { word: "IMAGE", hint: "Manasseh sets a graven image in the Lord's house", verseRef: "2 Kings 21:7", verse: "And he set a graven image of the grove that he had made in the house, of which the Lord said to David, and to Solomon his son." },
+            { word: "ANGER", hint: "Manasseh's wickedness provokes the Lord to anger", verseRef: "2 Kings 21:6", verse: "He wrought much wickedness in the sight of the Lord, to provoke him to anger." },
+          ] },
+        { ch: 22, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/22?lang=eng",
+          bank: ["AGAIN","ANGER","ASIDE","BEGAN","BRING","CURSE","DAVID","DEALT","DOERS","DWELT","EIGHT","FOUND","GRAVE","GREAT","HANDS","HEARD","HEART","HOUSE","JUDAH","KINGS","MIGHT","MONEY","OTHER","PEACE","PLACE","REIGN","RIGHT","SAITH","SHALL","SHALT","SIGHT","SPAKE","STONE","THEIR","THERE","THINE","WHICH","WORDS","WORKS","WRATH","YEARS"],
+          words: [
+            { word: "FOUND", hint: "Hilkiah finds the book of the law", verseRef: "2 Kings 22:8", verse: "I have found the book of the law in the house of the Lord. And Hilkiah gave the book to Shaphan, and he read it." },
+            { word: "WRATH", hint: "The wrath of the Lord is kindled over the forgotten law", verseRef: "2 Kings 22:13", verse: "Great is the wrath of the Lord that is kindled against us, because our fathers have not hearkened unto the words of this book." },
+            { word: "HEART", hint: "Josiah's heart was tender when he heard the law", verseRef: "2 Kings 22:19", verse: "Because thine heart was tender, and thou hast humbled thyself before the Lord, when thou heardest what I spake against this place." },
+            { word: "CURSE", hint: "The place is warned of desolation and a curse", verseRef: "2 Kings 22:19", verse: "That they should become a desolation and a curse, and hast rent thy clothes, and wept before me; I also have heard thee, saith the Lord." },
+            { word: "GRAVE", hint: "Josiah is promised he will be gathered to his grave in peace", verseRef: "2 Kings 22:20", verse: "Behold therefore, I will gather thee unto thy fathers, and thou shalt be gathered into thy grave in peace." },
+          ] },
+        { ch: 23, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/23?lang=eng",
+          bank: ["ABOUT","AFTER","ALONE","ALTAR","AMMON","AMONG","ANGER","AROSE","ASHES","BANDS","BEGAN","BONES","BRAKE","BREAD","BRING","BROOK","EGYPT","EVERY","FORTH","FOUND","GATES","GIVEN","GREAT","GROVE","HEART","HOUSE","IDOLS","JUDAH","KINGS","MIGHT","MONEY","MOSES","MOUNT","NEBAT","ORDER","PLACE","REIGN","RIGHT","RIVER","ROUND","RUMAH","SHALL","SHEBA","SIGHT","SMALL","SPIED","STEAD","STOOD","TAXED","THEIR","THERE","THESE","THREE","TITLE","UPPER","WHERE","WHICH","WOMEN","WORDS","WRATH","YEARS"],
+          words: [
+            { word: "IDOLS", hint: "Josiah destroys idols and renews the covenant", verseRef: "2 Kings 23:24", verse: "The images, and the idols, and all the abominations that were spied in the land of Judah and in Jerusalem, did Josiah put away." },
+            { word: "ALTAR", hint: "Josiah breaks down the altar at Beth-el", verseRef: "2 Kings 23:15", verse: "Moreover the altar that was at Beth-el... both that altar and the high place he brake down, and burned the high place, and stamped it small to powder." },
+            { word: "GROVE", hint: "Josiah burns the grove at the brook Kidron", verseRef: "2 Kings 23:6", verse: "And he brought out the grove from the house of the Lord, without Jerusalem, unto the brook Kidron, and burned it at the brook Kidron." },
+            { word: "BONES", hint: "Josiah burns the bones of false priests upon the altar", verseRef: "2 Kings 23:16", verse: "He spied the sepulchres that were there in the mount, and sent, and took the bones out of the sepulchres, and burned them upon the altar, and polluted it." },
+            { word: "ASHES", hint: "The ashes of idols are carried to Beth-el", verseRef: "2 Kings 23:4", verse: "He burned them without Jerusalem in the fields of Kidron, and carried the ashes of them unto Beth-el." },
+          ] },
+        { ch: 24, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/24?lang=eng",
+          bank: ["AGAIN","AMMON","ANGER","BANDS","BEGAN","BLOOD","EGYPT","HOUSE","JUDAH","KINGS","MIGHT","REIGN","RIVER","SEVEN","SIGHT","SLEPT","SPAKE","STEAD","TAKEN","THOSE","THREE","UNTIL","WHICH","WIVES","WOULD","YEARS"],
+          words: [
+            { word: "BANDS", hint: "Bands of raiders besiege Judah", verseRef: "2 Kings 24:2", verse: "And the Lord sent against him bands of the Chaldees, and bands of the Syrians, and bands of the Moabites, and bands of the children of Ammon, and sent them against Judah." },
+            { word: "BLOOD", hint: "Jehoiakim fills Jerusalem with innocent blood", verseRef: "2 Kings 24:4", verse: "And also for the innocent blood that he shed: for he filled Jerusalem with innocent blood; which the Lord would not pardon." },
+            { word: "ANGER", hint: "The anger of the Lord casts Judah from his presence", verseRef: "2 Kings 24:20", verse: "For through the anger of the Lord it came to pass in Jerusalem and Judah, until he had cast them out from his presence." },
+            { word: "AMMON", hint: "Bands of the children of Ammon join the raid on Judah", verseRef: "2 Kings 24:2", verse: "And the Lord sent against him bands of the Chaldees, and bands of the Syrians, and bands of the Moabites, and bands of the children of Ammon." },
+          ] },
+        { ch: 25, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-kgs/25?lang=eng",
+          bank: ["ABOUT","ABOVE","AFTER","AROSE","BASES","BEGAN","BOUND","BOWLS","BRAKE","BRASS","BREAD","BREAK","BUILT","BURNT","CARRY","CHIEF","DAILY","DWELL","EGYPT","EVERY","FIFTH","FORTS","FOUND","GIVEN","GREAT","GUARD","HEARD","HOUSE","JUDAH","KINGS","MONTH","NIGHT","NINTH","PLAIN","REIGN","ROUND","ROYAL","RULER","SERVE","SEVEN","SHALL","SMALL","SMOTE","SPAKE","SWARE","TENTH","THEIR","THERE","THESE","THREE","WALLS","WHICH"],
+          words: [
+            { word: "BURNT", hint: "Jerusalem falls and the temple is burnt", verseRef: "2 Kings 25:9", verse: "And he burnt the house of the Lord, and the king's house, and all the houses of Jerusalem, and every great man's house burnt he with fire." },
+            { word: "BRASS", hint: "The brass pillars of the temple are broken and carried away", verseRef: "2 Kings 25:13", verse: "The pillars of brass that were in the house of the Lord... did the Chaldees break in pieces, and carried the brass of them to Babylon." },
+            { word: "WALLS", hint: "The walls of Jerusalem are broken down", verseRef: "2 Kings 25:10", verse: "And all the army of the Chaldees, that were with the captain of the guard, brake down the walls of Jerusalem round about." },
+            { word: "GUARD", hint: "The captain of the guard comes against Jerusalem", verseRef: "2 Kings 25:8", verse: "Came Nebuzar-adan, captain of the guard, a servant of the king of Babylon, unto Jerusalem." },
+            { word: "SMOTE", hint: "The king of Babylon smote the captives at Riblah", verseRef: "2 Kings 25:21", verse: "And the king of Babylon smote them, and slew them at Riblah in the land of Hamath. So Judah was carried away out of their land." },
+          ] },
+      ],
+    },
+    {
+      label: "July 20\u201326 \u00b7 2 Chronicles 14\u201320; 26; 30",
+      book: "2 Chronicles",
+      chapters: [
+        { ch: 14, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-chr/14?lang=eng",
+          bank: ["ABOUT","ARRAY","BRAKE","BUILD","BUILT","COULD","CRIED","DAVID","EVERY","GATES","GERAR","GIVEN","JUDAH","POWER","QUIET","RIGHT","ROUND","SHEEP","SLEPT","SMOTE","SPOIL","STEAD","TENTS","THEIR","THERE","THESE","THOSE","THREE","WALLS","WHICH","WHILE","YEARS","ZERAH"],
+          words: [
+            { word: "CRIED", hint: "Asa cries unto the Lord against the Ethiopians", verseRef: "2 Chronicles 14:11", verse: "And Asa cried unto the Lord his God, and said, Lord, it is nothing with thee to help, whether with many, or with them that have no power: help us, O Lord our God; for we rest on thee." },
+            { word: "SMOTE", hint: "The Lord smote the Ethiopians before Asa", verseRef: "2 Chronicles 14:12", verse: "So the Lord smote the Ethiopians before Asa, and before Judah; and the Ethiopians fled." },
+            { word: "SPOIL", hint: "Judah carries away very much spoil", verseRef: "2 Chronicles 14:13", verse: "And Asa and the people that were with him pursued them unto Gerar... and they carried away very much spoil." },
+            { word: "QUIET", hint: "The land was quiet ten years under Asa", verseRef: "2 Chronicles 14:1", verse: "So Abijah slept with his fathers... and Asa his son reigned in his stead. In his days the land was quiet ten years." },
+            { word: "BRAKE", hint: "Asa brakes down the images of false gods", verseRef: "2 Chronicles 14:3", verse: "For he took away the altars of the strange gods, and the high places, and brake down the images, and cut down the groves." },
+          ] },
+        { ch: 15, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-chr/15?lang=eng",
+          bank: ["ABOUT","ALTAR","BEING","BROOK","BURNT","DEATH","FOUND","GREAT","GROVE","HANDS","HEARD","HEART","HOUSE","IDOLS","JUDAH","MONTH","MOUNT","PEACE","PORCH","QUEEN","REIGN","ROUND","SEVEN","SHALL","SHEEP","SMALL","SPOIL","SWARE","SWORN","TAKEN","THEIR","THERE","THESE","THIRD","THOSE","TIMES","VOICE","WHICH","WHILE","WHOLE","WOMAN","WORDS","WOULD"],
+          words: [
+            { word: "FOUND", hint: "Judah covenants to seek the Lord and is found of him", verseRef: "2 Chronicles 15:15", verse: "And all Judah rejoiced at the oath... and sought him with their whole desire; and he was found of them: and the Lord gave them rest round about." },
+            { word: "IDOLS", hint: "Asa puts away the abominable idols", verseRef: "2 Chronicles 15:8", verse: "He took courage, and put away the abominable idols out of all the land of Judah and Benjamin." },
+            { word: "ALTAR", hint: "Asa renews the altar of the Lord", verseRef: "2 Chronicles 15:8", verse: "And renewed the altar of the Lord, that was before the porch of the Lord." },
+            { word: "HEART", hint: "Judah seeks the Lord with all their heart", verseRef: "2 Chronicles 15:12", verse: "And they entered into a covenant to seek the Lord God of their fathers with all their heart and with all their soul." },
+            { word: "QUEEN", hint: "Asa removes his mother Maachah from being queen", verseRef: "2 Chronicles 15:16", verse: "He removed her from being queen, because she had made an idol in a grove: and Asa cut down her idol, and stamped it, and burnt it." },
+          ] },
+        { ch: 16, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-chr/16?lang=eng",
+          bank: ["BREAK","BUILT","CEASE","DAVID","DIDST","DWELT","EARTH","FIRST","GREAT","HADAD","HEARD","HEART","HOUSE","JUDAH","KINDS","KINGS","MIGHT","NINTH","RAMAH","REIGN","SHALT","SLEPT","SMOTE","STORE","SWEET","SYRIA","THERE","THINE","THING","UNTIL","WHICH","WHOLE","WHOSE","WROTH"],
+          words: [
+            { word: "HEART", hint: "The Lord seeks those whose heart is perfect toward him", verseRef: "2 Chronicles 16:9", verse: "For the eyes of the Lord run to and fro throughout the whole earth, to shew himself strong in the behalf of them whose heart is perfect toward him." },
+            { word: "SMOTE", hint: "Ben-hadad's captains smite the cities of Israel", verseRef: "2 Chronicles 16:4", verse: "And Ben-hadad hearkened unto king Asa, and sent the captains of his armies against the cities of Israel; and they smote Ijon, and Dan." },
+            { word: "WROTH", hint: "Asa is wroth with the seer who rebukes him", verseRef: "2 Chronicles 16:10", verse: "Then Asa was wroth with the seer, and put him in a prison house; for he was in a rage with him because of this thing." },
+            { word: "CEASE", hint: "Baasha lets his building work cease", verseRef: "2 Chronicles 16:5", verse: "And it came to pass, when Baasha heard it, that he left off building of Ramah, and let his work cease." },
+            { word: "EARTH", hint: "The Lord's eyes run throughout the whole earth", verseRef: "2 Chronicles 16:9", verse: "For the eyes of the Lord run to and fro throughout the whole earth, to shew himself strong in the behalf of them whose heart is perfect toward him." },
+          ] },
+        { ch: 17, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-chr/17?lang=eng",
+          bank: ["ABOUT","ADNAH","AFTER","ARMED","BUILT","CHIEF","DAVID","FIRST","GOATS","GREAT","HEART","HOUSE","JUDAH","LANDS","READY","REIGN","ROUND","SEVEN","STEAD","STORE","TAKEN","TEACH","THEIR","THESE","THIRD","THOSE","THREE","WAXED","WHICH"],
+          words: [
+            { word: "TEACH", hint: "Priests are sent to teach the law throughout Judah", verseRef: "2 Chronicles 17:7", verse: "Also in the third year of his reign he sent to his princes... to teach in the cities of Judah." },
+            { word: "HEART", hint: "Jehoshaphat's heart is lifted up in the ways of the Lord", verseRef: "2 Chronicles 17:6", verse: "And his heart was lifted up in the ways of the Lord: moreover he took away the high places and groves out of Judah." },
+            { word: "ARMED", hint: "Armed men of Benjamin stand ready for war", verseRef: "2 Chronicles 17:17", verse: "And of Benjamin; Eliada a mighty man of valour, and with him armed men with bow and shield two hundred thousand." },
+            { word: "CHIEF", hint: "Adnah the chief leads Judah's captains of thousands", verseRef: "2 Chronicles 17:14", verse: "Of Judah, the captains of thousands; Adnah the chief, and with him mighty men of valour three hundred thousand." },
+            { word: "READY", hint: "An army stands ready prepared for war", verseRef: "2 Chronicles 17:18", verse: "And next him was Jehozabad, and with him an hundred and fourscore thousand ready prepared for the war." },
+          ] },
+        { ch: 18, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-chr/18?lang=eng",
+          bank: ["ABOUT","AFTER","AGAIN","BREAD","CARRY","CHEEK","CRIED","EVERY","FETCH","FIGHT","GOING","GREAT","HORNS","HOUSE","INNER","JOASH","JUDAH","KINGS","LYING","MIGHT","MOUTH","MOVED","NEVER","PEACE","PLACE","RIGHT","ROBES","SAITH","SHALL","SHALT","SHEEP","SMALL","SMOTE","SPAKE","SPEAK","STOOD","SYRIA","THEIR","THERE","THESE","THINE","TIMES","TRUTH","UNTIL","WATER","WHICH","WORDS","WOULD","YEARS"],
+          words: [
+            { word: "TRUTH", hint: "Micaiah will speak nothing but the truth", verseRef: "2 Chronicles 18:15", verse: "And the king said to him, How many times shall I adjure thee that thou say nothing but the truth to me in the name of the Lord?" },
+            { word: "LYING", hint: "A lying spirit is put in the mouth of Ahab's prophets", verseRef: "2 Chronicles 18:22", verse: "Now therefore, behold, the Lord hath put a lying spirit in the mouth of these thy prophets, and the Lord hath spoken evil against thee." },
+            { word: "HORNS", hint: "Zedekiah makes horns of iron to prophesy victory", verseRef: "2 Chronicles 18:10", verse: "And Zedekiah the son of Chenaanah had made him horns of iron, and said, Thus saith the Lord, With these thou shalt push Syria until they be consumed." },
+            { word: "CHEEK", hint: "Zedekiah smites Micaiah upon the cheek", verseRef: "2 Chronicles 18:23", verse: "Then Zedekiah the son of Chenaanah came near, and smote Micaiah upon the cheek." },
+            { word: "SHEEP", hint: "Micaiah sees Israel scattered like sheep with no shepherd", verseRef: "2 Chronicles 18:16", verse: "I did see all Israel scattered upon the mountains, as sheep that have no shepherd." },
+          ] },
+        { ch: 19, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-chr/19?lang=eng",
+          bank: ["AGAIN","BLOOD","CAUSE","CHIEF","DWELL","DWELT","FOUND","GIFTS","HEART","HOUSE","JUDAH","JUDGE","KINGS","MOUNT","PEACE","RULER","SHALL","SHEBA","TAKEN","THEIR","THERE","THINE","WRATH"],
+          words: [
+            { word: "JUDGE", hint: "Jehoshaphat sets up judges to judge for the Lord", verseRef: "2 Chronicles 19:6", verse: "And said to the judges, Take heed what ye do: for ye judge not for man, but for the Lord, who is with you in the judgment." },
+            { word: "HEART", hint: "Judges are told to serve with a perfect heart", verseRef: "2 Chronicles 19:9", verse: "Thus shall ye do in the fear of the Lord, faithfully, and with a perfect heart." },
+            { word: "WRATH", hint: "Jehoshaphat is warned that wrath is upon him", verseRef: "2 Chronicles 19:2", verse: "Shouldest thou help the ungodly, and love them that hate the Lord? therefore is wrath upon thee from before the Lord." },
+            { word: "FOUND", hint: "Good things are found in Jehoshaphat despite his error", verseRef: "2 Chronicles 19:3", verse: "Nevertheless there are good things found in thee, in that thou hast taken away the groves out of the land." },
+            { word: "GIFTS", hint: "Judges must show no favor and take no gifts", verseRef: "2 Chronicles 19:7", verse: "There is no iniquity with the Lord our God, nor respect of persons, nor taking of gifts." },
+          ] },
+        { ch: 20, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-chr/20?lang=eng",
+          bank: ["ABOUT","AFTER","AGAIN","AMMON","AMONG","ASAPH","BEGAN","BOWED","BROOK","BUILT","CARRY","CLIFF","COULD","COURT","DIDST","DOING","DRIVE","DWELT","EARLY","EARTH","EGYPT","EVERY","EZION","FIGHT","FIRST","FORTH","FOUND","GEBER","GIVEN","GREAT","HARPS","HEARD","HOUSE","JEIEL","JUDAH","JUDGE","KINGS","MERCY","MIDST","MIGHT","MOUNT","OTHER","PLACE","POWER","QUIET","REALM","REIGN","RIGHT","ROUND","SAITH","SHALL","SHIPS","SIGHT","SPOIL","STAND","STILL","STOOD","SWORD","SYRIA","TAKEN","TAMAR","TEKOA","THEIR","THERE","THINE","THOSE","THREE","TOWER","VOICE","WATCH","WHICH","WIVES","WORKS","YEARS","YOURS"],
+          words: [
+            { word: "STAND", hint: "\u201cOur eyes are upon thee\u201d \u2014 stand still and see the Lord's salvation", verseRef: "2 Chronicles 20:17", verse: "Ye shall not need to fight in this battle: set yourselves, stand ye still, and see the salvation of the Lord with you, O Judah and Jerusalem." },
+            { word: "STILL", hint: "Judah is told to stand still and see the Lord's salvation", verseRef: "2 Chronicles 20:17", verse: "Ye shall not need to fight in this battle: set yourselves, stand ye still, and see the salvation of the Lord with you, O Judah and Jerusalem." },
+            { word: "MERCY", hint: "Singers praise the Lord, for his mercy endures forever", verseRef: "2 Chronicles 20:21", verse: "And when he had consulted with the people, he appointed singers unto the Lord... to say, Praise the Lord; for his mercy endureth for ever." },
+            { word: "SWORD", hint: "Jehoshaphat prays that if the sword comes, they will cry to the Lord", verseRef: "2 Chronicles 20:9", verse: "If, when evil cometh upon us, as the sword, judgment, or pestilence, or famine, we stand before this house, and in thy presence... and cry unto thee, then thou wilt hear and help." },
+            { word: "HARPS", hint: "Judah returns to Jerusalem with harps and trumpets", verseRef: "2 Chronicles 20:28", verse: "And they came to Jerusalem with psalteries and harps and trumpets unto the house of the Lord." },
+          ] },
+        { ch: 26, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-chr/26?lang=eng",
+          bank: ["AARON","ABOUT","AFTER","ALTAR","AMONG","BANDS","BEGAN","BEING","BRAKE","BUILT","CHIEF","DEATH","DWELT","EGYPT","ELOTH","ENEMY","FIELD","FIFTY","FIRST","FORTH","GIFTS","GREAT","HEART","HOUSE","JEIEL","JUDAH","KINGS","LEPER","LOVED","POWER","REIGN","RIGHT","RULER","SEVEN","SHALL","SHOOT","SIGHT","SLEPT","STEAD","THEIR","THINE","THREE","UNDER","WELLS","WHICH","WHILE","WHOLE","WRITE","WROTH","YEARS"],
+          words: [
+            { word: "LEPER", hint: "Uzziah's pride leads to leprosy", verseRef: "2 Chronicles 26:21", verse: "And Uzziah the king was a leper unto the day of his death, and dwelt in a several house, being a leper; for he was cut off from the house of the Lord." },
+            { word: "ALTAR", hint: "Uzziah presumes to burn incense on the altar himself", verseRef: "2 Chronicles 26:16", verse: "He transgressed against the Lord his God, and went into the temple of the Lord to burn incense upon the altar of incense." },
+            { word: "WROTH", hint: "Uzziah grows wroth when the priests confront him", verseRef: "2 Chronicles 26:19", verse: "Then Uzziah was wroth, and had a censer in his hand to burn incense: and while he was wroth with the priests, the leprosy even rose up in his forehead." },
+            { word: "AARON", hint: "Only the priests, sons of Aaron, may burn incense", verseRef: "2 Chronicles 26:18", verse: "It appertaineth not unto thee, Uzziah, to burn incense unto the Lord, but to the priests the sons of Aaron, that are consecrated to burn incense." },
+            { word: "LOVED", hint: "Uzziah loved husbandry and built towers and wells", verseRef: "2 Chronicles 26:10", verse: "Husbandmen also, and vine dressers in the mountains, and in Carmel: for he loved husbandry." },
+          ] },
+        { ch: 30, url: "https://www.churchofjesuschrist.org/study/scriptures/ot/2-chr/30?lang=eng",
+          bank: ["AFTER","AGAIN","AROSE","ASHER","BLOOD","BREAD","BROOK","BURNT","CLEAN","COULD","DAVID","DWELT","ENTER","EVERY","FEAST","GREAT","HEARD","HEART","HOUSE","ISAAC","JUDAH","KINGS","MONTH","MOSES","OTHER","PEACE","PLACE","POSTS","SCORN","SERVE","SEVEN","SHALL","SHEBA","SHEEP","SINCE","SPAKE","STOOD","TAKEN","THEIR","THERE","THING","VOICE","WHICH","WHOLE","WRATH","WROTE","YIELD"],
+          words: [
+            { word: "YIELD", hint: "Hezekiah calls Israel to yield themselves unto the Lord", verseRef: "2 Chronicles 30:8", verse: "Now be ye not stiffnecked, as your fathers were, but yield yourselves unto the Lord, and enter into his sanctuary, which he hath sanctified for ever." },
+            { word: "SCORN", hint: "Some laugh Hezekiah's messengers to scorn", verseRef: "2 Chronicles 30:10", verse: "So the posts passed from city to city through the country of Ephraim and Manasseh even unto Zebulun: but they laughed them to scorn, and mocked them." },
+            { word: "CLEAN", hint: "The Levites sanctify those who were not clean", verseRef: "2 Chronicles 30:17", verse: "For there were many in the congregation that were not sanctified: therefore the Levites had the charge of the killing of the passovers for every one that was not clean." },
+            { word: "FEAST", hint: "A great congregation keeps the feast of unleavened bread", verseRef: "2 Chronicles 30:13", verse: "And there assembled at Jerusalem much people to keep the feast of unleavened bread in the second month, a very great congregation." },
+            { word: "BLOOD", hint: "The priests sprinkle the blood of the passover", verseRef: "2 Chronicles 30:16", verse: "And they stood in their place after their manner, according to the law of Moses the man of God: the priests sprinkled the blood, which they received of the hand of the Levites." },
+          ] },
+      ],
+    },
+  ];
+
+  // Flatten into a single lookup list, each entry tagged with its week index
+  const CHAPTERS = [];
+  WEEKS.forEach((week, wi) => {
+    week.chapters.forEach(c => CHAPTERS.push({ ...c, weekIndex: wi, book: week.book }));
+  });
+
+  const MAX_GUESSES = 6;
+  const WORD_LEN = 5;
+
+  let current = CHAPTERS[0];
+  let currentChapterIndex = 0;
+  let guesses = [];
+  let currentGuess = "";
+  let gameOver = false;
+  let keyStatus = {}; // letter -> best status
+  let currentWordIndex = 0;
+  const completedWordsByChapter = {}; // chapter index -> completed word indexes
+
+  const boardEl = document.getElementById("board");
+  const keyboardEl = document.getElementById("keyboard");
+  const messageEl = document.getElementById("message");
+  const chapterSelect = document.getElementById("chapterSelect");
+  const scriptureLink = document.getElementById("scriptureLink");
+  const weekLabelEl = document.getElementById("weekLabel");
+  const roundStatusEl = document.getElementById("roundStatus");
+  const playAgainBtn = document.getElementById("playAgain");
+
+  function populateChapterSelect(){
+    chapterSelect.innerHTML = "";
+    let flatIndex = 0;
+    WEEKS.forEach((week) => {
+      const group = document.createElement("optgroup");
+      group.label = week.label;
+      week.chapters.forEach((c) => {
+        const opt = document.createElement("option");
+        opt.value = flatIndex;
+        opt.textContent = `${week.book} ${c.ch}`;
+        group.appendChild(opt);
+        flatIndex++;
+      });
+      chapterSelect.appendChild(group);
+    });
+  }
+
+  function currentWord(){
+    return current.words[currentWordIndex];
+  }
+
+  function completedWords(){
+    return completedWordsByChapter[currentChapterIndex] || [];
+  }
+
+  function updateRoundStatus(){
+    const total = current.words.length;
+    const completed = completedWords().length;
+    const remainingAfterRound = total - completed - (gameOver ? 0 : 1);
+
+    if (gameOver) {
+      roundStatusEl.textContent = completed < total
+        ? `Round ${completed} of ${total} complete · ${total - completed} new word puzzle${total - completed === 1 ? "" : "s"} remaining`
+        : `All ${total} meaningful word puzzles in this chapter are complete.`;
+      playAgainBtn.hidden = completed >= total;
+      if (!playAgainBtn.hidden) {
+        playAgainBtn.textContent = `Play Again · ${total - completed} New Word${total - completed === 1 ? "" : "s"} Left`;
+      }
+    } else {
+      roundStatusEl.textContent = `Round ${completed + 1} of ${total} · ${Math.max(remainingAfterRound, 0)} new word puzzle${remainingAfterRound === 1 ? "" : "s"} after this round`;
+      playAgainBtn.hidden = true;
+    }
+  }
+
+  function loadChapter(index){
+    currentChapterIndex = index;
+    current = CHAPTERS[index];
+    const completed = completedWords();
+    currentWordIndex = current.words.findIndex((_, wordIndex) => !completed.includes(wordIndex));
+    const chapterComplete = currentWordIndex === -1;
+    if (chapterComplete) currentWordIndex = 0;
+    scriptureLink.href = current.url;
+    scriptureLink.textContent = `Read ${current.book} ${current.ch} on ChurchofJesusChrist.org →`;
+    weekLabelEl.textContent = WEEKS[current.weekIndex].label;
+    chapterSelect.value = index;
+    guesses = [];
+    currentGuess = "";
+    gameOver = chapterComplete;
+    keyStatus = {};
+    showMessage(chapterComplete ? "Every meaningful word puzzle in this chapter has been played. Choose another chapter to continue." : "");
+    renderBoard();
+    renderKeyboard();
+    updateRoundStatus();
+  }
+
+  function playAgain(){
+    const completed = completedWords();
+    currentWordIndex = current.words.findIndex((_, wordIndex) => !completed.includes(wordIndex));
+    if (currentWordIndex === -1) return;
+    guesses = [];
+    currentGuess = "";
+    gameOver = false;
+    keyStatus = {};
+    showMessage("");
+    renderBoard();
+    renderKeyboard();
+    updateRoundStatus();
+  }
+
+  function showMessage(text, cls){
+    messageEl.textContent = text;
+    messageEl.className = "";
+    if (text) {
+      messageEl.classList.add("show");
+      if (cls) messageEl.classList.add(cls);
+    }
+  }
+
+  function evaluateGuess(guess, answer){
+    const result = Array(WORD_LEN).fill("absent");
+    const answerLetters = answer.split("");
+    const used = Array(WORD_LEN).fill(false);
+
+    for (let i = 0; i < WORD_LEN; i++){
+      if (guess[i] === answer[i]){
+        result[i] = "correct";
+        used[i] = true;
+      }
+    }
+    for (let i = 0; i < WORD_LEN; i++){
+      if (result[i] === "correct") continue;
+      const idx = answerLetters.findIndex((l, j) => l === guess[i] && !used[j]);
+      if (idx !== -1){
+        result[i] = "present";
+        used[idx] = true;
+      }
+    }
+    return result;
+  }
+
+  function updateKeyStatus(guess, result){
+    const rank = { absent: 0, present: 1, correct: 2 };
+    guess.split("").forEach((letter, i) => {
+      const status = result[i];
+      if (!keyStatus[letter] || rank[status] > rank[keyStatus[letter]]){
+        keyStatus[letter] = status;
+      }
+    });
+  }
+
+  function renderBoard(){
+    boardEl.innerHTML = "";
+    for (let r = 0; r < MAX_GUESSES; r++){
+      const rowEl = document.createElement("div");
+      rowEl.className = "row";
+      const guessWord = guesses[r];
+      const isCurrentRow = r === guesses.length && !gameOver;
+      const letters = guessWord ? guessWord.word.split("") :
+        (isCurrentRow ? currentGuess.split("") : []);
+
+      for (let c = 0; c < WORD_LEN; c++){
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        const letter = letters[c] || "";
+        if (letter) tile.classList.add("filled");
+        tile.textContent = letter;
+        if (guessWord){
+          tile.classList.add(guessWord.result[c]);
+        }
+        rowEl.appendChild(tile);
+      }
+      boardEl.appendChild(rowEl);
+    }
+  }
+
+  function renderKeyboard(){
+    const rows = [
+      "QWERTYUIOP".split(""),
+      "ASDFGHJKL".split(""),
+      ["ENTER", ..."ZXCVBNM".split(""), "DEL"],
+    ];
+    keyboardEl.innerHTML = "";
+    rows.forEach(rowKeys => {
+      const rowEl = document.createElement("div");
+      rowEl.className = "krow";
+      rowKeys.forEach(k => {
+        const btn = document.createElement("button");
+        btn.className = "key";
+        btn.textContent = k === "DEL" ? "⌫" : (k === "ENTER" ? "Enter" : k);
+        if (k === "ENTER" || k === "DEL") btn.classList.add("wide");
+        if (keyStatus[k]) btn.classList.add(keyStatus[k]);
+        btn.addEventListener("click", () => handleKey(k));
+        rowEl.appendChild(btn);
+      });
+      keyboardEl.appendChild(rowEl);
+    });
+  }
+
+  function handleKey(key){
+    if (gameOver) return;
+    if (key === "ENTER"){
+      submitGuess();
+    } else if (key === "DEL"){
+      currentGuess = currentGuess.slice(0, -1);
+      renderBoard();
+    } else if (/^[A-Z]$/.test(key) && currentGuess.length < WORD_LEN){
+      currentGuess += key;
+      renderBoard();
+    }
+  }
+
+  function submitGuess(){
+    if (currentGuess.length < WORD_LEN){
+      showMessage("Not enough letters");
+      shakeCurrentRow();
+      return;
+    }
+    if (!current.bank.includes(currentGuess)){
+      showMessage(`Not found in ${current.book} ${current.ch} — try again`);
+      shakeCurrentRow();
+      return;
+    }
+    const answer = currentWord();
+    const result = evaluateGuess(currentGuess, answer.word);
+    guesses.push({ word: currentGuess, result });
+    updateKeyStatus(currentGuess, result);
+
+    const won = currentGuess === answer.word;
+    currentGuess = "";
+    renderBoard();
+    renderKeyboard();
+
+    if (won){
+      gameOver = true;
+      completedWordsByChapter[currentChapterIndex] = [...completedWords(), currentWordIndex];
+      showMessage(`Solved! ${answer.word} — ${answer.hint}. ${answer.verseRef}: "${answer.verse}"`, "win");
+    } else if (guesses.length >= MAX_GUESSES){
+      gameOver = true;
+      completedWordsByChapter[currentChapterIndex] = [...completedWords(), currentWordIndex];
+      showMessage(`The word was ${answer.word} — ${answer.hint}. ${answer.verseRef}: "${answer.verse}"`, "lose");
+    } else {
+      showMessage("");
+    }
+    updateRoundStatus();
+  }
+
+  function shakeCurrentRow(){
+    const rowEl = boardEl.children[guesses.length];
+    if (!rowEl) return;
+    rowEl.style.transform = "translateX(-4px)";
+    setTimeout(() => { rowEl.style.transform = "translateX(4px)"; }, 60);
+    setTimeout(() => { rowEl.style.transform = ""; }, 120);
+  }
+
+  document.addEventListener("keydown", (e) => {
+    const k = e.key.toUpperCase();
+    if (k === "ENTER") handleKey("ENTER");
+    else if (k === "BACKSPACE") handleKey("DEL");
+    else if (/^[A-Z]$/.test(k)) handleKey(k);
+  });
+
+  chapterSelect.addEventListener("change", (e) => {
+    loadChapter(parseInt(e.target.value, 10));
+  });
+
+  playAgainBtn.addEventListener("click", playAgain);
+
+  populateChapterSelect();
+  // Default to the current week's first chapter
+  const defaultIndex = CHAPTERS.findIndex(c => c.book === "2 Chronicles");
+  loadChapter(defaultIndex >= 0 ? defaultIndex : 0);
+</script>
+
+</body>
+</html>
