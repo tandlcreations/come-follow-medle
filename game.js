@@ -29,6 +29,7 @@ const modalTitle = document.getElementById("modalTitle");
 const modalBody = document.getElementById("modalBody");
 const modalClose = document.getElementById("modalClose");
 const modalAction = document.getElementById("modalAction");
+let modalReturnFocus = null;
 
 function populateChapterSelect(){
   chapterSelect.innerHTML = "";
@@ -128,6 +129,7 @@ function playAgain(){
 }
 
 function openModal(title, content, actionText = ""){
+  modalReturnFocus = document.activeElement;
   modalTitle.textContent = title;
   modalBody.innerHTML = "";
   if (typeof content === "string") {
@@ -146,8 +148,11 @@ function openModal(title, content, actionText = ""){
 }
 
 function closeModal(){
+  const wasOpen = modalBackdrop.classList.contains("open");
   modalBackdrop.classList.remove("open");
   modalBackdrop.setAttribute("aria-hidden", "true");
+  if (wasOpen && modalReturnFocus instanceof HTMLElement) modalReturnFocus.focus();
+  modalReturnFocus = null;
 }
 
 function showMessage(title, text){
@@ -225,6 +230,7 @@ function renderBoard(){
   for (let r = 0; r < MAX_GUESSES; r++){
     const rowEl = document.createElement("div");
     rowEl.className = "row";
+    rowEl.setAttribute("role", "row");
     const guessWord = guesses[r];
     const isCurrentRow = r === guesses.length && !gameOver;
     const letters = guessWord ? guessWord.word.split("") :
@@ -233,11 +239,15 @@ function renderBoard(){
     for (let c = 0; c < WORD_LEN; c++){
       const tile = document.createElement("div");
       tile.className = "tile";
+      tile.setAttribute("role", "gridcell");
       const letter = letters[c] || "";
       if (letter) tile.classList.add("filled");
       tile.textContent = letter;
       if (guessWord){
         tile.classList.add(guessWord.result[c]);
+        tile.setAttribute("aria-label", `${letter}, ${guessWord.result[c]}`);
+      } else {
+        tile.setAttribute("aria-label", letter || "empty");
       }
       rowEl.appendChild(tile);
     }
@@ -260,6 +270,7 @@ function renderKeyboard(){
       btn.className = "key";
       btn.textContent = k === "DEL" ? "⌫" : (k === "ENTER" ? "Enter" : k);
       if (k === "ENTER" || k === "DEL") btn.classList.add("wide");
+      if (k === "DEL") btn.setAttribute("aria-label", "Delete letter");
       if (keyStatus[k]) btn.classList.add(keyStatus[k]);
       btn.addEventListener("click", () => handleKey(k));
       rowEl.appendChild(btn);
@@ -330,7 +341,19 @@ document.addEventListener("keydown", (e) => {
     closeModal();
     return;
   }
-  if (modalBackdrop.classList.contains("open")) return;
+  if (modalBackdrop.classList.contains("open")) {
+    if (e.key === "Tab") {
+      const focusable = [...modalBackdrop.querySelectorAll('button:not([hidden]), [href], select, [tabindex]:not([tabindex="-1"])')]
+        .filter(el => !el.hasAttribute("disabled"));
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (first && last && (e.shiftKey ? document.activeElement === first : document.activeElement === last)) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      }
+    }
+    return;
+  }
   const k = e.key.toUpperCase();
   if (k === "ENTER") {
     e.preventDefault();

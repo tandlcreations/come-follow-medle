@@ -13,9 +13,11 @@
 
 <div class="seal">CFM</div>
 <header>
-  <h1>Come Follow Medle</h1>
+  <div class="title-row">
+    <h1>Come Follow Medle</h1>
+    <button class="help-button" id="helpButton" type="button" aria-label="How to play">?</button>
+  </div>
   <p class="tag">A scripture word puzzle</p>
-  <button class="help-button" id="helpButton" type="button" aria-label="How to play">?</button>
 </header>
 
 <div class="control-card">
@@ -31,9 +33,9 @@
   <div class="round-status" id="roundStatus" aria-live="polite"></div>
 </div>
 
-<div id="board"></div>
+<div id="board" role="grid" aria-label="Guess board"></div>
 
-<div id="keyboard"></div>
+<div id="keyboard" role="group" aria-label="On-screen keyboard"></div>
 
 <footer>
   <div class="divider"></div>

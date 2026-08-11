@@ -48,9 +48,17 @@
   header{
     text-align:center;
     margin-bottom:10px;
-    position:relative;
     width:100%;
-    max-width:420px;
+    max-width:520px;
+  }
+  .title-row{
+    display:grid;
+    grid-template-columns:40px minmax(0, 1fr) 40px;
+    align-items:center;
+    gap:8px;
+  }
+  .title-row::before{
+    content:"";
   }
   h1{
     font-family:'Cinzel',serif;
@@ -69,11 +77,8 @@
     color:var(--gold);
   }
   .help-button{
-    position:absolute;
-    right:0;
-    top:2px;
-    width:32px;
-    height:32px;
+    width:40px;
+    height:40px;
     border:1px solid var(--panel-line);
     border-radius:50%;
     background:var(--panel);
@@ -127,7 +132,7 @@
     color: var(--parchment);
     font-weight:400;
   }
-  select#chapterSelect:focus-visible, .icon-link:focus-visible, .key:focus-visible, .play-again:focus-visible, .help-button:focus-visible, .modal-close:focus-visible, .modal-action:focus-visible{
+  select#chapterSelect:focus-visible, .scripture-link:focus-visible, .key:focus-visible, .play-again:focus-visible, .help-button:focus-visible, .modal-close:focus-visible, .modal-action:focus-visible{
     outline:2px solid var(--gold-bright);
     outline-offset:2px;
   }
@@ -141,7 +146,8 @@
     color:var(--gold-bright);
     text-decoration:none;
     border-bottom:1px solid rgba(218,181,103,0.35);
-    padding-bottom:1px;
+    min-height:28px;
+    padding:4px 0 2px;
     transition: color .15s ease, border-color .15s ease;
   }
   .scripture-link:hover{ color:var(--parchment); border-bottom-color:var(--parchment); }
@@ -311,8 +317,8 @@
     position:absolute;
     top:10px;
     right:10px;
-    width:30px;
-    height:30px;
+    width:40px;
+    height:40px;
     border:1px solid var(--panel-line);
     border-radius:50%;
     background:transparent;
@@ -384,4 +390,18 @@
     .control-card{margin-bottom:8px;}
     #board{margin-bottom:8px;}
     .key{padding:8px 0;}
+  }
+  @media (max-width: 380px){
+    .title-row{
+      grid-template-columns:36px minmax(0, 1fr) 36px;
+      gap:4px;
+    }
+    h1{
+      font-size:clamp(18px, 6vw, 22px);
+      letter-spacing:1px;
+    }
+    .help-button{
+      width:36px;
+      height:36px;
+    }
   }
